@@ -68,6 +68,8 @@ def open_cart_window():
     cart_window.title("Cart")
     cart_window.geometry("600x400")
     cart_window.images = []  # Store images here to prevent garbage collection
+    tc = 0
+
 
     for index, (item_name, item_details) in enumerate(cart_items.items()):
         img = Image.open(item_details["image"])
@@ -79,9 +81,9 @@ def open_cart_window():
         CTkLabel(cart_window, text=item_details["quantity"]).grid(row=index, column=1, padx=10, pady=10)
         CTkLabel(cart_window, text=f"${float(item_details['price']) * float(item_details['quantity'])}").grid(row=index, column=2, padx=10, pady=10)
         CTkLabel(cart_window, text="", image=img).grid(row=index, column=3, padx=10, pady=10)
-
+        tc += float(item_details['price']) * float(item_details['quantity'])
         CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item)).grid(row=index, column=4, padx=10, pady=10)
-
+    CTkLabel(cart_window, text=f"Total cost: {tc}").grid(row=index+1, column=0, padx=10, pady=10)
     CTkLabel(cart_window, text="").grid(row=index, column=0, padx=10, pady=10)
 
 def signin_final():
