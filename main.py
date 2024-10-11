@@ -15,10 +15,10 @@ if mycon.is_connected():
     print("MySQL Version:", data)
 
 products = {
-    "Product 1": {"price": 10.99, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"},
-    "Product 2": {"price": 15.49, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"},
-    "Product 3": {"price": 7.99, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"},
-    "Product 4": {"price": 12.99, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"}
+    "Product 1": {"price": 10.99, "image":"Screenshot 2023-05-17 184015.png"},
+    "Product 2": {"price": 15.49, "image": "Screenshot 2023-05-17 221145.png"},
+    "Product 3": {"price": 7.99, "image": "Screenshot 2023-05-17 221153.png"},
+    "Product 4": {"price": 12.99, "image": "Screenshot 2023-05-20 092017.png"}
 }
 cart_items = {}
 
@@ -124,6 +124,9 @@ def signin_final():
 
         view_cart = CTkButton(main_window, text="View Cart", command=open_cart_window)
         view_cart.grid(row=row + 1, column=0, padx=10, pady=10)
+
+        logoutbt = CTkButton(main_window, text="Logout", command=logout)
+        logoutbt.grid(row = row + 1, column=1, padx=10, pady=10)
 
 
 
