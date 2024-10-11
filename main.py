@@ -59,23 +59,29 @@ def singup_final():
     scs = CTkLabel(signup_win, text="Submitted Successfully")
     scs.pack(padx=10, pady=10)
 
+def delete_itms(item_name):
+    cart_items.pop(item_name)
+
 def open_cart_window():
     global cart_window
     cart_window = CTkToplevel(app)
     cart_window.title("Cart")
     cart_window.geometry("600x400")
+    cart_window.images = []  # Store images here to prevent garbage collection
 
     for index, (item_name, item_details) in enumerate(cart_items.items()):
         img = Image.open(item_details["image"])
-        img = img.resize((50, 50))
+        img = img.resize((70, 70))
         img = ImageTk.PhotoImage(img)
+        cart_window.images.append(img)  # Keep a reference to the image
 
         CTkLabel(cart_window, text=item_name).grid(row=index, column=0, padx=10, pady=10)
         CTkLabel(cart_window, text=item_details["quantity"]).grid(row=index, column=1, padx=10, pady=10)
         CTkLabel(cart_window, text=f"${float(item_details['price']) * float(item_details['quantity'])}").grid(row=index, column=2, padx=10, pady=10)
         CTkLabel(cart_window, text="", image=img).grid(row=index, column=3, padx=10, pady=10)
-            # Keep a reference to the image to prevent garbage collection
-        cart_window.image = img
+
+        CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item)).grid(row=index, column=4, padx=10, pady=10)
+
     CTkLabel(cart_window, text="").grid(row=index, column=0, padx=10, pady=10)
 
 def signin_final():
