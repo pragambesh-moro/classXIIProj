@@ -20,10 +20,21 @@ products = {
     "Product 3": {"price": 7.99, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"},
     "Product 4": {"price": 12.99, "image": "D:\Python\School\class12final\Screenshot 2023-05-17 184015.png"}
 }
-cart = []
-def add_to_cart(product):
-    cart.append(product)
-    print(f"{product} added to cart. Current cart: {cart}")
+cart_items = {}
+
+def add_to_cart(item_name):
+    if item_name in products:
+        if item_name in cart_items:
+            cart_items[item_name]["quantity"] += 1
+        else:
+            cart_items[item_name] = {
+                "quantity": 1,
+                "price": products[item_name]["price"],
+                "image": products[item_name]["image"]
+            }
+        print(f"Added {item_name} to cart.")
+    else:
+        print(f"Item {item_name} not found in products.")
 # Functions
 def app_quitter():
     mycon.commit()
@@ -47,6 +58,25 @@ def singup_final():
 
     scs = CTkLabel(signup_win, text="Submitted Successfully")
     scs.pack(padx=10, pady=10)
+
+def open_cart_window():
+    global cart_window
+    cart_window = CTkToplevel(app)
+    cart_window.title("Cart")
+    cart_window.geometry("600x400")
+
+    for index, (item_name, item_details) in enumerate(cart_items.items()):
+        img = Image.open(item_details["image"])
+        img = img.resize((50, 50))
+        img = ImageTk.PhotoImage(img)
+
+        CTkLabel(cart_window, text=item_name).grid(row=index, column=0, padx=10, pady=10)
+        CTkLabel(cart_window, text=item_details["quantity"]).grid(row=index, column=1, padx=10, pady=10)
+        CTkLabel(cart_window, text=f"${float(item_details['price']) * float(item_details['quantity'])}").grid(row=index, column=2, padx=10, pady=10)
+        CTkLabel(cart_window, text="", image=img).grid(row=index, column=3, padx=10, pady=10)
+            # Keep a reference to the image to prevent garbage collection
+        cart_window.image = img
+    CTkLabel(cart_window, text="").grid(row=index, column=0, padx=10, pady=10)
 
 def signin_final():
     ui = uid.get()
@@ -90,6 +120,11 @@ def signin_final():
             add_button.grid(row=row, column=2, padx=10, pady=10)
 
             row += 1
+
+
+        view_cart = CTkButton(main_window, text="View Cart", command=open_cart_window)
+        view_cart.grid(row=row + 1, column=0, padx=10, pady=10)
+
 
 
 
