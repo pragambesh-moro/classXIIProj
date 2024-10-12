@@ -43,6 +43,8 @@ def app_quitter():
     app.quit()
 
 
+
+
 def singup_final():
     un = user_name.get()
     ui = user_id.get()
@@ -61,6 +63,8 @@ def singup_final():
 
 def delete_itms(item_name):
     cart_items.pop(item_name)
+    print(f"Deleted {item_name} from cart.")
+
 
 def open_cart_window():
     global cart_window
