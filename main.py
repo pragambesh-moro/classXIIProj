@@ -76,6 +76,19 @@ def update_cart_display():
 def delete_itms(item_name):
     cart_items[item_name]["quantity"] -= 1
     print(f"Deleted {item_name} from cart.")
+    if cart_items[item_name]["quantity"] == 0:
+        # Remove the item from the cart
+        del cart_items[item_name]
+        item_widgets[item_name]['quantity_label'].grid_forget()
+        item_widgets[item_name]['price_label'].grid_forget()
+        item_widgets[item_name]['image_label'].grid_forget()
+        item_widgets[item_name]['name_label'].grid_forget()
+        item_widgets[item_name]['delete_button'].grid_forget()
+        del item_widgets[item_name]
+    if not cart_items:
+        total_cost_label.grid_forget()
+        empty_lbl = CTkLabel(cart_window, text="Your Cart is Empty!!", font=("Arial", 20))
+        empty_lbl.grid(row=0, column=0, columnspan=3, pady=10)
     update_cart_display()
 
 
@@ -83,35 +96,45 @@ def open_cart_window():
     global cart_window, item_name, total_cost_label
     cart_window = CTkToplevel(app)
     cart_window.title("Cart")
-    cart_window.geometry("600x400")
+    cart_window.geometry("700x700")
     cart_window.images = []  # Store images here to prevent garbage collection
     tc = 0
 
+    if cart_items:
+        for index, (item_name, item_details) in enumerate(cart_items.items()):
+            img = Image.open(item_details["image"])
+            img = img.resize((70, 70))
+            img = ImageTk.PhotoImage(img)
+            cart_window.images.append(img)  # Keep a reference to the image
 
-    for index, (item_name, item_details) in enumerate(cart_items.items()):
-        img = Image.open(item_details["image"])
-        img = img.resize((70, 70))
-        img = ImageTk.PhotoImage(img)
-        cart_window.images.append(img)  # Keep a reference to the image
+            name_lbl = CTkLabel(cart_window, text=item_name)
+            name_lbl.grid(row=index, column=0, padx=10, pady=10)
+            qty_lbl = CTkLabel(cart_window, text=f" Quantity: {item_details['quantity']}")
+            qty_lbl.grid(row=index, column=1, padx=10, pady=10)
+            pri_lbl = CTkLabel(cart_window, text=f"Price: ${float(item_details['price']) * float(item_details['quantity'])}")
+            pri_lbl.grid(row=index, column=2, padx=10, pady=10)
+            img_lbl = CTkLabel(cart_window, text="", image=img)
+            img_lbl.grid(row=index, column=3, padx=10, pady=10)
+            tc += float(item_details['price']) * float(item_details['quantity'])
+            del_but = CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item))
+            del_but.grid(row=index, column=4, padx=10, pady=10)
 
-        CTkLabel(cart_window, text=item_name).grid(row=index, column=0, padx=10, pady=10)
-        qty_lbl = CTkLabel(cart_window, text=f" Quantity: {item_details['quantity']}")
-        qty_lbl.grid(row=index, column=1, padx=10, pady=10)
-        pri_lbl = CTkLabel(cart_window, text=f"Price: ${float(item_details['price']) * float(item_details['quantity'])}")
-        pri_lbl.grid(row=index, column=2, padx=10, pady=10)
-        img_lbl = CTkLabel(cart_window, text="", image=img)
-        img_lbl.grid(row=index, column=3, padx=10, pady=10)
-        tc += float(item_details['price']) * float(item_details['quantity'])
-        CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item)).grid(row=index, column=4, padx=10, pady=10)
+            item_widgets[item_name] = {
+                'name_label':name_lbl,
+                'quantity_label': qty_lbl,
+                'price_label': pri_lbl,
+                'image_label': img_lbl,
+                'delete_button':del_but
+            }
+        total_cost_label = CTkLabel(cart_window, text=f"Total cost: {tc}")
+        total_cost_label.grid(row=index + 1, column=0, padx=10, pady=10)
 
-        item_widgets[item_name] = {
-            'quantity_label': qty_lbl,
-            'price_label': pri_lbl,
-            'image_label': img_lbl
-        }
+    else:
+        #total_cost_label.grid_forget()
+        empty_lbl = CTkLabel(cart_window, text="Your Cart is Empty!!", font=("Arial", 20))
+        empty_lbl.grid(row=0, column=0, columnspan=3, pady=10)
 
-    total_cost_label = CTkLabel(cart_window, text=f"Total cost: {tc}")
-    total_cost_label.grid(row=index+1, column=0, padx=10, pady=10)
+
     CTkLabel(cart_window, text="").grid(row=index, column=0, padx=10, pady=10)
 
 
