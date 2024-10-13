@@ -1,52 +1,56 @@
 import customtkinter as ctk
+from PIL import Image
 
-# Sample data for cart items
-cart_items = ["Product 1", "Product 2", "Product 3"]
-
-
-def update_cart():
-    # Clear the current cart display
-    for widget in cart_frame.winfo_children():
-        widget.destroy()
-
-    # Display updated cart items
-    for index, (item_name, item_details) in enumerate(cart_items.items()):
-        img = Image.open(item_details["image"])
-        img = img.resize((70, 70))
-        img = ImageTk.PhotoImage(img)
-        cart_window.images.append(img)  # Keep a reference to the image
-
-        CTkLabel(cart_window, text=item_name).grid(row=index, column=0, padx=10, pady=10)
-        CTkLabel(cart_window, text=item_details["quantity"]).grid(row=index, column=1, padx=10, pady=10)
-        CTkLabel(cart_window, text=f"${float(item_details['price']) * float(item_details['quantity'])}").grid(row=index,
-                                                                                                              column=2,
-                                                                                                              padx=10,
-                                                                                                              pady=10)
-        CTkLabel(cart_window, text="", image=img).grid(row=index, column=3, padx=10, pady=10)
-        tc += float(item_details['price']) * float(item_details['quantity'])
-        CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_item(item)).grid(row=index,
-                                                                                                     column=4, padx=10,
-                                                                                                     pady=10)
+# Sample data for the cart
+cart_items = {
+    'item1': {'name': 'Apple', 'quantity': 5, 'price': 10, 'image': 'Screenshot 2023-05-17 184015.png'},
+    'item2': {'name': 'Banana', 'quantity': 3, 'price': 5, 'image': 'Screenshot 2023-05-17 184015.png'}
+}
 
 
-def delete_item(item):
-    # Remove the item from the cart
-    cart_items.remove(item)
-    # Update the cart display
-    update_cart()
+# Function to update the quantity and refresh the display
+def decrement_quantity(item_key):
+    if cart_items[item_key]['quantity'] > 0:
+        cart_items[item_key]['quantity'] -= 1
+        update_cart_display()
 
 
-# Create the main window
+# Function to update the cart display
+def update_cart_display():
+    for item_key, widgets in item_widgets.items():
+        item_info = cart_items[item_key]
+        widgets['quantity_label'].configure(text=f"Quantity: {item_info['quantity']}")
+        widgets['price_label'].configure(text=f"Price: {item_info['price']}")
+        widgets['image_label'].configure(image=ctk.CTkImage(light_image=Image.open(item_info['image']), size=(50, 50)))
+
+
 root = ctk.CTk()
-root.geometry("300x300")
+root.geometry("500x400")
 
-# Create a frame for the cart items
-cart_frame = ctk.CTkFrame(root)
-cart_frame.pack(fill="both", expand=True)
+item_widgets = {}
 
-# Initial cart display
-update_cart()
+# Create the cart display
+for idx, (item_key, item_info) in enumerate(cart_items.items()):
+    name_label = ctk.CTkLabel(root, text=item_info['name'])
+    name_label.grid(row=idx, column=0, padx=10, pady=5)
 
-# Run the application
+    quantity_label = ctk.CTkLabel(root, text=f"Quantity: {item_info['quantity']}")
+    quantity_label.grid(row=idx, column=1, padx=10, pady=5)
+
+    price_label = ctk.CTkLabel(root, text=f"Price: {item_info['price']}")
+    price_label.grid(row=idx, column=2, padx=10, pady=5)
+
+    image = ctk.CTkImage(light_image=Image.open(item_info['image']), size=(50, 50))
+    image_label = ctk.CTkLabel(root, image=image, text="")
+    image_label.grid(row=idx, column=3, padx=10, pady=5)
+
+    decrement_button = ctk.CTkButton(root, text="-", command=lambda key=item_key: decrement_quantity(key))
+    decrement_button.grid(row=idx, column=4, padx=10, pady=5)
+
+    item_widgets[item_key] = {
+        'quantity_label': quantity_label,
+        'price_label': price_label,
+        'image_label': image_label
+    }
+
 root.mainloop()
-

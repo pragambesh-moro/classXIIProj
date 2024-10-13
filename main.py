@@ -21,6 +21,7 @@ products = {
     "Product 4": {"price": 12.99, "image": "Screenshot 2023-05-20 092017.png"}
 }
 cart_items = {}
+item_widgets = {}
 
 def add_to_cart(item_name):
     if item_name in products:
@@ -60,14 +61,26 @@ def singup_final():
 
     scs = CTkLabel(signup_win, text="Submitted Successfully")
     scs.pack(padx=10, pady=10)
+def update_cart_display():
+    total_cost = 0
+    for item_name, widgets in item_widgets.items():
+        item_info = cart_items[item_name]
+        widgets['quantity_label'].configure(text=f"Quantity: {item_info['quantity']}")
+        widgets['price_label'].configure(text=f"Price: {item_info['price']}")
+        widgets['image_label'].configure(image=CTkImage(light_image=Image.open(item_info['image']), size=(70, 70)))
+        total_cost += float(item_info['price']) * float(item_info['quantity'])
+
+        total_cost_label.configure(text=f"Total cost: ${total_cost}")
+
 
 def delete_itms(item_name):
-    cart_items.pop(item_name)
+    cart_items[item_name]["quantity"] -= 1
     print(f"Deleted {item_name} from cart.")
+    update_cart_display()
 
 
 def open_cart_window():
-    global cart_window
+    global cart_window, item_name, total_cost_label
     cart_window = CTkToplevel(app)
     cart_window.title("Cart")
     cart_window.geometry("600x400")
@@ -82,13 +95,26 @@ def open_cart_window():
         cart_window.images.append(img)  # Keep a reference to the image
 
         CTkLabel(cart_window, text=item_name).grid(row=index, column=0, padx=10, pady=10)
-        CTkLabel(cart_window, text=item_details["quantity"]).grid(row=index, column=1, padx=10, pady=10)
-        CTkLabel(cart_window, text=f"${float(item_details['price']) * float(item_details['quantity'])}").grid(row=index, column=2, padx=10, pady=10)
-        CTkLabel(cart_window, text="", image=img).grid(row=index, column=3, padx=10, pady=10)
+        qty_lbl = CTkLabel(cart_window, text=f" Quantity: {item_details['quantity']}")
+        qty_lbl.grid(row=index, column=1, padx=10, pady=10)
+        pri_lbl = CTkLabel(cart_window, text=f"Price: ${float(item_details['price']) * float(item_details['quantity'])}")
+        pri_lbl.grid(row=index, column=2, padx=10, pady=10)
+        img_lbl = CTkLabel(cart_window, text="", image=img)
+        img_lbl.grid(row=index, column=3, padx=10, pady=10)
         tc += float(item_details['price']) * float(item_details['quantity'])
         CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item)).grid(row=index, column=4, padx=10, pady=10)
-    CTkLabel(cart_window, text=f"Total cost: {tc}").grid(row=index+1, column=0, padx=10, pady=10)
+
+        item_widgets[item_name] = {
+            'quantity_label': qty_lbl,
+            'price_label': pri_lbl,
+            'image_label': img_lbl
+        }
+
+    total_cost_label = CTkLabel(cart_window, text=f"Total cost: {tc}")
+    total_cost_label.grid(row=index+1, column=0, padx=10, pady=10)
     CTkLabel(cart_window, text="").grid(row=index, column=0, padx=10, pady=10)
+
+
 
 def signin_final():
     ui = uid.get()
@@ -145,6 +171,7 @@ def signin_final():
 
 def logout():
     main_window.destroy()
+    cart_window.destroy()
     signin()
 # CTK
 app = CTk()
