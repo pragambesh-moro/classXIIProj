@@ -62,6 +62,7 @@ def singup_final():
     scs = CTkLabel(signup_win, text="Submitted Successfully")
     scs.pack(padx=10, pady=10)
 def update_cart_display():
+    global total_cost
     total_cost = 0
     for item_name, widgets in item_widgets.items():
         item_info = cart_items[item_name]
@@ -69,7 +70,7 @@ def update_cart_display():
         widgets['price_label'].configure(text=f"Price: {item_info['price']}")
         widgets['image_label'].configure(image=CTkImage(light_image=Image.open(item_info['image']), size=(70, 70)))
         total_cost += float(item_info['price']) * float(item_info['quantity'])
-
+        tc = total_cost
         total_cost_label.configure(text=f"Total cost: ${total_cost}")
 
 
@@ -91,9 +92,32 @@ def delete_itms(item_name):
         empty_lbl.grid(row=0, column=0, columnspan=3, pady=10)
     update_cart_display()
 
+# def pay():
+#
+def check_out():
+    global messagebox_window, total_cost
+    messagebox_window = CTkToplevel(app)
+    messagebox_window.title("Check Out")
+    messagebox_window.geometry("500x150")
+    if total_cost:
+        if total_cost != 0 and total_cost <= tc:
+            tx = total_cost
+        else:
+            tx = tc
+        checkout_lbl = CTkLabel(messagebox_window, text=f"Payment due: ${tx}")
+        checkout_lbl.grid(row=0, column=0, columnspan=3, pady=10)
+    else:
+        checkout_lbl = CTkLabel(messagebox_window, text=f"Payment due: ${tc}")
+        checkout_lbl.grid(row=0, column=0, columnspan=3, pady=10)
+    button_pay = CTkButton(messagebox_window, text="Pay", command=pay)
+    button_pay.grid(row=3, column=0, pady=20, padx=20)
+
+    button_cancel = CTkButton(messagebox_window, text="Cancel", command=(messagebox_window.destroy))
+    button_cancel.grid(row=3, column=1, pady=20, padx=20)
+
 
 def open_cart_window():
-    global cart_window, item_name, total_cost_label
+    global cart_window, item_name, total_cost_label, tc, toal_cost
     cart_window = CTkToplevel(app)
     cart_window.title("Cart")
     cart_window.geometry("700x700")
@@ -118,6 +142,8 @@ def open_cart_window():
             tc += float(item_details['price']) * float(item_details['quantity'])
             del_but = CTkButton(cart_window, text='Delete', command=lambda item=item_name: delete_itms(item))
             del_but.grid(row=index, column=4, padx=10, pady=10)
+            global total_cost
+            total_cost = tc
 
             item_widgets[item_name] = {
                 'name_label':name_lbl,
@@ -126,6 +152,9 @@ def open_cart_window():
                 'image_label': img_lbl,
                 'delete_button':del_but
             }
+
+        checkout_btn = CTkButton(cart_window, text='Checkout', command=check_out)
+        checkout_btn.grid(row=index+1, column = 1, padx=10, pady=10)
         total_cost_label = CTkLabel(cart_window, text=f"Total cost: {tc}")
         total_cost_label.grid(row=index + 1, column=0, padx=10, pady=10)
 
