@@ -70,7 +70,7 @@ def update_cart_display():
         widgets['price_label'].configure(text=f"Price: {item_info['price']}")
         widgets['image_label'].configure(image=CTkImage(light_image=Image.open(item_info['image']), size=(70, 70)))
         total_cost += float(item_info['price']) * float(item_info['quantity'])
-        tc = total_cost
+        total_cost
         total_cost_label.configure(text=f"Total cost: ${total_cost}")
 
 
@@ -92,8 +92,48 @@ def delete_itms(item_name):
         empty_lbl.grid(row=0, column=0, columnspan=3, pady=10)
     update_cart_display()
 
-# def pay():
-#
+def pay():
+    global dialog, usn_entry, pwd_entry
+    dialog = CTkToplevel(app)
+    dialog.title("Payment Page")
+    dialog.geometry("400x200")
+
+    payment_lbl = CTkLabel(dialog, text=f"Payment due is ${total_cost}")
+    payment_lbl.pack(pady=20)
+
+    usn_entry = CTkEntry(dialog, placeholder_text="Enter Username")
+    usn_entry.pack(pady=20)
+
+    pwd_entry = CTkEntry(dialog, placeholder_text="Enter Password", show = '*')
+    pwd_entry.pack(pady=20)
+
+    subt_btn = CTkButton(dialog, text = "Submit", command=fin_pay)
+    subt_btn.pack(pady = 20)
+
+def fin_pay():
+    global cart_items, item_widgets
+    print(usn_entry.get())
+    print(pwd_entry.get())
+    print(ui)
+    print(upw)
+    if usn_entry.get() == ui and pwd_entry.get() == upw:
+        qry2 = f"SELECT Balance from user_details where uid like '{ui}%'"
+        mycur.execute(qry2)
+        bal = mycur.fetchone()
+        print(f"Payment of ${total_cost} was succesful")
+        paid_cost = bal[0] - total_cost
+        qry3 = f"update user_details set Balance = {paid_cost} where uid like '{ui}%'"
+        mycur.execute(qry3)
+        mycon.commit()
+        cart_items = {}
+        item_widgets = {}
+        dialog.destroy()
+        messagebox_window.destroy()
+        cart_window.destroy()
+    else:
+        print("Something Went Wrong")
+
+
 def check_out():
     global messagebox_window, total_cost
     messagebox_window = CTkToplevel(app)
@@ -102,13 +142,11 @@ def check_out():
     if total_cost:
         if total_cost != 0 and total_cost <= tc:
             tx = total_cost
-        else:
-            tx = tc
         checkout_lbl = CTkLabel(messagebox_window, text=f"Payment due: ${tx}")
-        checkout_lbl.grid(row=0, column=0, columnspan=3, pady=10)
+        checkout_lbl.grid(row=0, column=1, pady=10)
     else:
         checkout_lbl = CTkLabel(messagebox_window, text=f"Payment due: ${tc}")
-        checkout_lbl.grid(row=0, column=0, columnspan=3, pady=10)
+        checkout_lbl.grid(row=0, column=1, pady=10)
     button_pay = CTkButton(messagebox_window, text="Pay", command=pay)
     button_pay.grid(row=3, column=0, pady=20, padx=20)
 
@@ -169,6 +207,7 @@ def open_cart_window():
 
 
 def signin_final():
+    global ui, upw
     ui = uid.get()
     upw = upwd.get()
     qry = f"SELECT * FROM user_details WHERE uid = '{ui}' AND upwd = '{upw}'"
@@ -222,6 +261,9 @@ def signin_final():
 
 
 def logout():
+    global cart_items, item_widgets
+    cart_items = {}
+    item_widgets = {}
     main_window.destroy()
     cart_window.destroy()
     signin()
