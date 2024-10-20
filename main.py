@@ -53,9 +53,10 @@ def singup_final():
     upwdd = user_pwd.get()
     uemail = user_email.get()
     uaddress = user_address.get()
+    ubal = 10000.0
     uph = int(user_ph.get())
 
-    qry = f"insert into user_details values('{ui}', '{un}', '{uemail}', {uph}, '{upwdd}', '{uaddress}')"
+    qry = f"insert into user_details values('{ui}', '{un}', '{uemail}', {uph}, '{upwdd}', '{uaddress}', {ubal})"
 
     mycur.execute(qry)
     mycon.commit()
