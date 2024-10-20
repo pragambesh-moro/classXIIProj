@@ -1,7 +1,6 @@
 """Class 12 project"""
 
 # IMPORTS
-import cv2
 from eggs import *
 import mysql.connector as mc
 from customtkinter import *
@@ -136,7 +135,7 @@ def fin_pay():
         cart_window.destroy()
     else:
         print("Something Went Wrong")
-        play_video_with_audio('/Users/pragambeshmoro/Downloads/school_intro.mp4')
+        play_video_with_audio('eegg.mp4')
 
 
 
