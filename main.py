@@ -1,5 +1,5 @@
 """Class 12 project"""
-
+import eggs
 # IMPORTS
 from eggs import *
 import mysql.connector as mc
@@ -48,6 +48,7 @@ def app_quitter():
 
 
 def singup_final():
+
     un = user_name.get()
     ui = user_id.get()
     upwdd = user_pwd.get()
@@ -134,9 +135,9 @@ def fin_pay():
         dialog.destroy()
         messagebox_window.destroy()
         cart_window.destroy()
+        eggs.gen_bill()
     else:
         print("Something Went Wrong")
-        play_video_with_audio('eegg.mp4')
 
 
 
@@ -215,13 +216,16 @@ def open_cart_window():
 
 
 def signin_final():
-    global ui, upw
+    global ui, upw, uxname
     ui = uid.get()
     upw = upwd.get()
     qry = f"SELECT * FROM user_details WHERE uid = '{ui}' AND upwd = '{upw}'"
     mycur.execute(qry)
     data = mycur.fetchall()
     print(data)
+    qn = f"SELECT uname FROM user_details WHERE uid = '{ui}' AND upwd = '{upw}'"
+    mycur.execute(qn)
+    uxname = (mycur.fetchone())[0]
     if data:
         scs = CTkLabel(signin_win, text="Logged-In Successfully")
         scs.pack(padx=10, pady=10)
@@ -342,6 +346,7 @@ button2.grid(row=3, column=1, pady=20, padx=20)
 button3 = CTkButton(app, text="Quit", command=app_quitter)
 button3.grid(row=3, column=2, pady=20, padx=20)
 
+global ui, uxname, total_cost
 
 app.mainloop()
 mycon.close()
