@@ -1,7 +1,5 @@
 """Class 12 project"""
-import eggs
 # IMPORTS
-from eggs import *
 import mysql.connector as mc
 from customtkinter import *
 from PIL import Image, ImageTk
@@ -122,6 +120,8 @@ def fin_pay():
     print(ui)
     print(upw)
     if usn_entry.get() == ui and pwd_entry.get() == upw:
+        from eggs import gen_bill
+        gen_bill()
         qry2 = f"SELECT Balance from user_details where uid like '{ui}%'"
         mycur.execute(qry2)
         bal = mycur.fetchone()
@@ -135,7 +135,6 @@ def fin_pay():
         dialog.destroy()
         messagebox_window.destroy()
         cart_window.destroy()
-        eggs.gen_bill()
     else:
         print("Something Went Wrong")
 
