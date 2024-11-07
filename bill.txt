@@ -1,8 +1,10 @@
 ######################################
           E-RETAIL-PLATFORM           
 Customer ID: tr01
-Customer Name: Test User 01
-Date and Time: 2024-11-06 17:18:17.025254
+Customer Name: Test User
+Date and Time: 2024-11-07 17:17:31.303685
+
+
 
 
              Total Cost: 21.98
